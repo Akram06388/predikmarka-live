@@ -22,16 +22,7 @@ function response(body, statusCode = 200) {
     };
 }
 
-function toLivePayload(match, league) {
-    if (!match) {
-        return {
-            isLive: false,
-            source: 'OpenLigaDB free football data',
-            league,
-            message: 'No live match found for this competition.'
-        };
-    }
-
+function toMatchPayload(match) {
     const result = match.MatchResults?.[match.MatchResults.length - 1];
     const start = Date.parse(match.MatchDateTime || '');
     const minute = Number.isFinite(start)
@@ -39,9 +30,6 @@ function toLivePayload(match, league) {
         : 0;
 
     return {
-        isLive: !match.MatchIsFinished && minute <= 95,
-        source: 'OpenLigaDB free football data',
-        league,
         matchId: match.MatchID,
         homeTeam: match.Team1?.TeamName || 'HOME',
         awayTeam: match.Team2?.TeamName || 'AWAY',
@@ -50,6 +38,26 @@ function toLivePayload(match, league) {
         scoreAway: Number(result?.PointsTeam2 || 0),
         redHome: 0,
         redAway: 0,
+        updatedAt: new Date().toISOString()
+    };
+}
+
+function toLivePayload(matches, league) {
+    if (!matches.length) {
+        return {
+            isLive: false,
+            source: 'OpenLigaDB free football data',
+            league,
+            matches: [],
+            message: 'No live match found for this competition.'
+        };
+    }
+
+    return {
+        isLive: true,
+        source: 'OpenLigaDB free football data',
+        league,
+        matches: matches.map(toMatchPayload),
         updatedAt: new Date().toISOString(),
         note: 'Free provider coverage for minute and cards may be limited.'
     };
@@ -71,15 +79,16 @@ exports.handler = async function handler(event) {
 
         const matches = await providerResponse.json();
         const now = Date.now();
-        const liveMatch = matches
+        const liveMatches = matches
             .filter(match => !match.MatchIsFinished)
             .filter(match => {
                 const start = Date.parse(match.MatchDateTime || '');
                 return Number.isFinite(start) && start <= now && now - start <= 100 * 60000;
             })
-            .sort((a, b) => Date.parse(a.MatchDateTime) - Date.parse(b.MatchDateTime))[0];
+            .sort((a, b) => Date.parse(a.MatchDateTime) - Date.parse(b.MatchDateTime))
+            .slice(0, 10);
 
-        return response(toLivePayload(liveMatch, league));
+        return response(toLivePayload(liveMatches, league));
     } catch (error) {
         return response({
             isLive: false,
