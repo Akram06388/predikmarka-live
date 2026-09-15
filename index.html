@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PredikMarka Pro - Advanced Football Analytics</title>
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         :root {
             --bg-global: #0f172a;
             --bg-card: #1e293b;
@@ -29,6 +33,7 @@
             padding: 15px;
             display: flex;
             justify-content: center;
+            overflow-x: hidden;
         }
 
         .container {
@@ -371,6 +376,7 @@
             display: none;
             margin-top: 25px;
             animation: fadeIn 0.4s ease-out;
+            overflow: hidden;
         }
 
         @media (max-width: 700px) {
@@ -383,9 +389,21 @@
                 margin-top: 0;
             }
 
-            .header-brand {
+            .dashboard-header {
                 flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+                padding: 14px;
+            }
+
+            .header-brand {
+                flex-direction: row;
+                align-items: center;
                 gap: 8px;
+            }
+
+            .header-copy {
+                min-width: 0;
             }
 
             .brand-badge {
@@ -396,11 +414,32 @@
 
             h2 {
                 font-size: 18px;
+                white-space: nowrap;
+            }
+
+            .header-metrics {
+                width: 100%;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .header-metric {
+                min-width: 0;
+                padding: 8px 4px;
+            }
+
+            .header-metric strong {
+                font-size: 12px;
             }
 
             .card {
                 padding: 16px;
                 border-radius: 14px;
+            }
+
+            h3 {
+                font-size: 13px;
+                line-height: 1.35;
             }
 
             .grid-inputs,
@@ -419,6 +458,19 @@
                 min-width: 100%;
             }
 
+            .full-width {
+                grid-column: 1 / -1;
+            }
+
+            .switch-header-row {
+                align-items: flex-start;
+            }
+
+            .switch-title {
+                min-width: 0;
+                line-height: 1.35;
+            }
+
             .brand-subtitle {
                 letter-spacing: 0.08em;
                 font-size: 9px;
@@ -430,6 +482,7 @@
 
             .result-header {
                 font-size: 14px;
+                line-height: 1.4;
             }
 
             .live-source-row {
@@ -438,6 +491,31 @@
 
             .prob-line {
                 font-size: 12px;
+                gap: 8px;
+            }
+
+            .live-score-row {
+                grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+                gap: 6px;
+            }
+
+            .score-box {
+                min-width: 0;
+                padding: 10px 8px;
+                font-size: 22px;
+            }
+
+            .team-name {
+                font-size: 11px;
+                overflow-wrap: anywhere;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 9px 6px;
             }
         }
 
