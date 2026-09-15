@@ -1514,6 +1514,10 @@
             liveFeed.socket.close();
             liveFeed.socket = null;
         }
+        if (liveFeed.pollTimer) {
+            clearInterval(liveFeed.pollTimer);
+            liveFeed.pollTimer = null;
+        }
         liveFeed.mode = 'demo';
         renderLiveState();
     }
@@ -1563,6 +1567,7 @@
         eventCounter: 0,
         source: 'Demo free match feed',
         socket: null,
+        pollTimer: null,
         mode: 'demo'
     };
 
@@ -1602,7 +1607,10 @@
         sourceEl.innerText = 'Source: connecting...';
 
         try {
-            const response = await fetch(`/api/live?league=${encodeURIComponent(league)}`);
+            const apiPath = window.location.hostname === 'localhost'
+                ? '/api/live'
+                : '/.netlify/functions/live';
+            const response = await fetch(`${apiPath}?league=${encodeURIComponent(league)}`);
             if (!response.ok) throw new Error(`API HTTP ${response.status}`);
             const payload = await response.json();
             if (!payload.isLive) {
@@ -1612,18 +1620,26 @@
             }
 
             applyLivePayload(payload);
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            liveFeed.socket = new WebSocket(`${protocol}//${window.location.host}/ws?league=${encodeURIComponent(league)}`);
-            liveFeed.socket.onmessage = event => {
-                try {
-                    applyLivePayload(JSON.parse(event.data));
-                } catch (error) {
-                    console.warn('Invalid live WebSocket payload', error);
-                }
-            };
-            liveFeed.socket.onclose = () => {
-                if (liveFeed.mode === 'api') sourceEl.innerText = 'Source: API disconnected';
-            };
+            if (window.location.hostname === 'localhost') {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                liveFeed.socket = new WebSocket(`${protocol}//${window.location.host}/ws?league=${encodeURIComponent(league)}`);
+                liveFeed.socket.onmessage = event => {
+                    try {
+                        applyLivePayload(JSON.parse(event.data));
+                    } catch (error) {
+                        console.warn('Invalid live WebSocket payload', error);
+                    }
+                };
+                liveFeed.socket.onclose = () => {
+                    if (liveFeed.mode === 'api') sourceEl.innerText = 'Source: API disconnected';
+                };
+            } else {
+                liveFeed.pollTimer = setInterval(async () => {
+                    if (liveFeed.mode !== 'api') return;
+                    const update = await fetch(`/.netlify/functions/live?league=${encodeURIComponent(league)}`);
+                    if (update.ok) applyLivePayload(await update.json());
+                }, 15000);
+            }
         } catch (error) {
             sourceEl.innerText = 'Source: unavailable, use Start Demo';
             document.getElementById('liveRecommendation').innerText = 'API gratis belum tersambung. Jalankan server.js, lalu buka http://localhost:8787.';
@@ -1765,6 +1781,10 @@
         if (liveFeed.socket) {
             liveFeed.socket.close();
             liveFeed.socket = null;
+        }
+        if (liveFeed.pollTimer) {
+            clearInterval(liveFeed.pollTimer);
+            liveFeed.pollTimer = null;
         }
         liveFeed.mode = 'demo';
         renderLiveState();
