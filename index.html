@@ -541,6 +541,14 @@
                 gap: 6px;
             }
 
+            .live-matches {
+                max-height: 300px;
+            }
+
+            .live-match-card {
+                padding: 9px 8px;
+            }
+
             .score-box {
                 min-width: 0;
                 padding: 10px 8px;
@@ -862,6 +870,56 @@
             margin: 8px 0 12px;
         }
 
+        .live-matches {
+            display: grid;
+            gap: 8px;
+            margin: 8px 0 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .live-match-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.72);
+        }
+
+        .live-match-team {
+            min-width: 0;
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .live-match-team.away {
+            text-align: right;
+        }
+
+        .live-match-center {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .live-match-score {
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .live-match-minute {
+            display: block;
+            margin-top: 2px;
+            color: var(--accent-green);
+            font-size: 9px;
+        }
+
         .team-name {
             font-size: 13px;
             font-weight: 700;
@@ -1091,10 +1149,12 @@
             <div id="liveStatus" class="live-status">OFFLINE</div>
         </div>
 
-        <div class="live-score-row">
-            <div class="team-name" id="liveHomeTeam">HOME</div>
-            <div class="score-box"><span id="liveHomeScore">0</span> : <span id="liveAwayScore">0</span></div>
-            <div class="team-name" id="liveAwayTeam">AWAY</div>
+        <div id="liveMatches" class="live-matches">
+            <div class="live-match-card">
+                <div class="live-match-team">HOME</div>
+                <div class="live-match-center"><span class="live-match-score">0 : 0</span><span class="live-match-minute">OFFLINE</span></div>
+                <div class="live-match-team away">AWAY</div>
+            </div>
         </div>
 
         <div class="live-meta-line">
@@ -1627,6 +1687,7 @@
         liveFeed.redHome = 0;
         liveFeed.redAway = 0;
         liveFeed.eventCounter = 0;
+        liveFeed.matches = [];
         if (liveFeed.timer) {
             clearInterval(liveFeed.timer);
             liveFeed.timer = null;
@@ -1689,6 +1750,7 @@
         source: 'Demo free match feed',
         socket: null,
         pollTimer: null,
+        matches: [],
         mode: 'demo'
     };
 
@@ -1703,18 +1765,15 @@
     }
 
     function applyLivePayload(payload) {
-        if (!payload || !payload.isLive) {
-            stopLiveDemo();
-            return;
-        }
-
-        liveFeed.isLive = true;
-        liveFeed.minute = Number(payload.minute) || 0;
-        liveFeed.scoreHome = Number(payload.scoreHome) || 0;
-        liveFeed.scoreAway = Number(payload.scoreAway) || 0;
-        liveFeed.redHome = Number(payload.redHome) || 0;
-        liveFeed.redAway = Number(payload.redAway) || 0;
-        liveFeed.source = payload.source || 'Free API';
+        liveFeed.matches = Array.isArray(payload?.matches) ? payload.matches : [];
+        const firstMatch = liveFeed.matches[0];
+        liveFeed.isLive = Boolean(payload?.isLive && firstMatch);
+        liveFeed.minute = Number(firstMatch?.minute) || 0;
+        liveFeed.scoreHome = Number(firstMatch?.scoreHome) || 0;
+        liveFeed.scoreAway = Number(firstMatch?.scoreAway) || 0;
+        liveFeed.redHome = Number(firstMatch?.redHome) || 0;
+        liveFeed.redAway = Number(firstMatch?.redAway) || 0;
+        liveFeed.source = payload?.source || 'Free API';
         liveFeed.mode = 'api';
         document.getElementById('liveSource').innerText = `Source: ${liveFeed.source}`;
         document.getElementById('liveLastUpdate').innerText = `Last update: ${new Date().toLocaleTimeString('id-ID')}`;
@@ -1734,13 +1793,11 @@
             const response = await fetch(`${apiPath}?league=${encodeURIComponent(league)}`);
             if (!response.ok) throw new Error(`API HTTP ${response.status}`);
             const payload = await response.json();
+            applyLivePayload(payload);
             if (!payload.isLive) {
                 sourceEl.innerText = `Source: ${payload.source || 'Free API'} (no live match found)`;
                 document.getElementById('liveRecommendation').innerText = 'Tidak ada pertandingan live pada kompetisi ini saat ini.';
-                return;
             }
-
-            applyLivePayload(payload);
             if (window.location.hostname === 'localhost') {
                 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
                 liveFeed.socket = new WebSocket(`${protocol}//${window.location.host}/ws?league=${encodeURIComponent(league)}`);
@@ -1813,21 +1870,35 @@
 
     function renderLiveState() {
         const statusEl = document.getElementById('liveStatus');
-        const homeScoreEl = document.getElementById('liveHomeScore');
-        const awayScoreEl = document.getElementById('liveAwayScore');
         const minuteEl = document.getElementById('liveMinute');
         const redCardEl = document.getElementById('liveRedCard');
         const recommendationEl = document.getElementById('liveRecommendation');
-        const homeNameEl = document.getElementById('liveHomeTeam');
-        const awayNameEl = document.getElementById('liveAwayTeam');
+        const matchesEl = document.getElementById('liveMatches');
 
         const homeName = (document.getElementById('inputHome').value || 'HOME').trim() || 'HOME';
         const awayName = (document.getElementById('inputAway').value || 'AWAY').trim() || 'AWAY';
 
-        homeNameEl.innerText = homeName.toUpperCase();
-        awayNameEl.innerText = awayName.toUpperCase();
-        homeScoreEl.innerText = liveFeed.scoreHome;
-        awayScoreEl.innerText = liveFeed.scoreAway;
+        const matches = liveFeed.matches.length ? liveFeed.matches : [{
+            homeTeam: homeName,
+            awayTeam: awayName,
+            scoreHome: 0,
+            scoreAway: 0,
+            minute: 0,
+            redHome: 0,
+            redAway: 0
+        }];
+
+        matchesEl.innerHTML = matches.map(match => `
+            <div class="live-match-card">
+                <div class="live-match-team">${escapeHtml(match.homeTeam)}</div>
+                <div class="live-match-center">
+                    <span class="live-match-score">${Number(match.scoreHome) || 0} : ${Number(match.scoreAway) || 0}</span>
+                    <span class="live-match-minute">${liveFeed.isLive ? `${Number(match.minute) || 0}'` : 'OFFLINE'}</span>
+                </div>
+                <div class="live-match-team away">${escapeHtml(match.awayTeam)}</div>
+            </div>
+        `).join('');
+
         minuteEl.innerText = `${liveFeed.minute}'`;
         redCardEl.innerText = `${liveFeed.redHome} - ${liveFeed.redAway}`;
         recommendationEl.innerText = buildLiveRecommendation();
@@ -1839,6 +1910,16 @@
             statusEl.classList.remove('live');
             statusEl.innerText = 'OFFLINE';
         }
+    }
+
+    function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[character]));
     }
 
     function startLiveDemo() {
@@ -1857,6 +1938,15 @@
         liveFeed.redHome = 0;
         liveFeed.redAway = 0;
         liveFeed.eventCounter = 0;
+        liveFeed.matches = [{
+            homeTeam: document.getElementById('inputHome').value || 'HOME',
+            awayTeam: document.getElementById('inputAway').value || 'AWAY',
+            scoreHome: 1,
+            scoreAway: 0,
+            minute: 45,
+            redHome: 0,
+            redAway: 0
+        }];
 
         renderLiveState();
 
@@ -1865,6 +1955,14 @@
 
             liveFeed.minute = Math.min(90, liveFeed.minute + 2);
             liveFeed.eventCounter += 1;
+
+            if (liveFeed.matches[0]) {
+                liveFeed.matches[0].minute = liveFeed.minute;
+                liveFeed.matches[0].scoreHome = liveFeed.scoreHome;
+                liveFeed.matches[0].scoreAway = liveFeed.scoreAway;
+                liveFeed.matches[0].redHome = liveFeed.redHome;
+                liveFeed.matches[0].redAway = liveFeed.redAway;
+            }
 
             if (liveFeed.eventCounter % 3 === 0) {
                 const chance = Math.random();
