@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PredikMarka Pro - Advanced Football Analytics</title>
+    <style>
+        :root {
+            --bg-global: #0f172a;
+            --bg-card: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #fbbf24;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-purple: #c084fc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(251, 191, 36, 0.15), transparent 24%),
+                linear-gradient(180deg, #020817 0%, #0f172a 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.75));
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-blue));
+            color: #0f172a;
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.35);
+            letter-spacing: 0.08em;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(74, 222, 128, 0.12);
+            border: 1px solid rgba(74, 222, 128, 0.35);
+            color: var(--accent-green);
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .status-pill::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.9);
+        }
+
+        .header-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .eyebrow {
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            text-align: left;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        h2 span {
+            color: var(--accent-gold);
+        }
+
+        .brand-subtitle {
+            text-align: left;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 10px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+        .header-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 10px;
+            width: min(420px, 100%);
+        }
+
+        .header-metric {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            background: rgba(15, 23, 42, 0.72);
+            text-align: center;
+        }
+
+        .header-metric small {
+            display: block;
+            color: var(--text-muted);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .header-metric strong {
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.95));
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-1px);
+            border-color: rgba(56, 189, 248, 0.32);
+            box-shadow: 0 20px 44px rgba(15, 23, 42, 0.28);
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            box-sizing: border-box;
+            color: var(--text-main);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .stat-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .stat-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: var(--text-main);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .booster-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .switch-label {
+            display: block;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .switch-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .switch-title {
+            font-size: 13px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .switch-desc {
+            display: block;
+            color: var(--text-muted);
+            font-size: 11px;
+            line-height: 1.4;
+            border-top: 1px dashed #334155;
+            padding-top: 6px;
+            margin-top: 4px;
+        }
+
+        .switch-input {
+            appearance: none;
+            width: 40px;
+            height: 20px;
+            background-color: #334155;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .switch-input::before {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .switch-input:checked {
+            background-color: var(--accent-blue);
+        }
+        
+        .switch-input.purple-switch:checked {
+            background-color: var(--accent-purple);
+        }
+
+        .switch-input:checked::before {
+            transform: translateX(20px);
+        }
+
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+        }
+
+        .secondary-btn {
+            width: auto;
+            min-width: 150px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .secondary-btn:hover {
+            box-shadow: 0 6px 16px rgba(148, 163, 184, 0.15);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                max-width: 100%;
+                margin-top: 0;
+            }
+
+            .header-brand {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .brand-badge {
+                width: 40px;
+                height: 40px;
+                font-size: 12px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 14px;
+            }
+
+            .grid-inputs,
+            .mini-grid,
+            .summary-grid,
+            .market-grid,
+            .action-row {
+                grid-template-columns: 1fr;
+            }
+
+            .action-row {
+                display: grid;
+            }
+
+            .secondary-btn {
+                min-width: 100%;
+            }
+
+            .brand-subtitle {
+                letter-spacing: 0.08em;
+                font-size: 9px;
+            }
+
+            .mini-bar-row {
+                grid-template-columns: 1fr;
+            }
+
+            .result-header {
+                font-size: 14px;
+            }
+
+            .live-source-row {
+                grid-template-columns: 1fr;
+            }
+
+            .prob-line {
+                font-size: 12px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-gold);
+        }
+
+        .prob-bar-container {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+
+        .prob-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .prob-values {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .prob-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .prob-bar-wrapper {
+            display: flex;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #334155;
+            margin-top: 5px;
+        }
+
+        .bar-home { background-color: var(--accent-green); transition: width 0.3s; }
+        .bar-draw { background-color: var(--accent-gold); transition: width 0.3s; }
+        .bar-away { background-color: var(--accent-blue); transition: width 0.3s; }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .market-item {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 6px;
+            text-align: center;
+        }
+
+        .market-item h4 {
+            margin: 0 0 6px 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .market-value {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #0f172a;
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #1e293b;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .top-row {
+            background-color: rgba(74, 222, 128, 0.08);
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .analysis-box,
+        .disclaimer-box,
+        .reason-box {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .analysis-box h3,
+        .disclaimer-box h3,
+        .reason-box h3 {
+            margin-bottom: 8px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+        }
+
+        .analysis-box p,
+        .disclaimer-box p,
+        .reason-box p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .disclaimer-box {
+            border-color: rgba(248, 113, 113, 0.4);
+            background: rgba(127, 29, 29, 0.12);
+        }
+
+        .insight-card {
+            margin-top: 18px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            background: linear-gradient(180deg, rgba(14, 116, 144, 0.12), rgba(15, 23, 42, 0.8));
+        }
+
+        .insight-card p {
+            margin: 6px 0 0;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 12px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .insight-panel {
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+            border: 1px solid rgba(251, 191, 36, 0.25);
+        }
+
+        .insight-panel h4 {
+            margin: 0 0 10px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+        }
+
+        .insight-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .insight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .insight-item strong {
+            color: var(--text-main);
+            font-size: 13px;
+        }
+
+        .mini-graph-card {
+            margin-top: 16px;
+            padding: 16px 14px 10px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .mini-graph-title {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .mini-graph-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .mini-graph-item {
+            display: grid;
+            gap: 6px;
+        }
+
+        .mini-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .mini-bar-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .live-panel {
+            background: linear-gradient(180deg, rgba(127, 29, 29, 0.12), rgba(15, 23, 42, 0.96));
+            border: 1px solid rgba(248, 113, 113, 0.22);
+        }
+
+        .live-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .live-header h3 {
+            margin: 0;
+        }
+
+        .live-status {
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(248, 113, 113, 0.35);
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
+        .live-status.live {
+            color: var(--accent-green);
+            border-color: rgba(74, 222, 128, 0.35);
+            background: rgba(20, 83, 45, 0.18);
+        }
+
+        .live-score-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0 12px;
+        }
+
+        .team-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .score-box {
+            min-width: 120px;
+            text-align: center;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .live-meta-line {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-bottom: 12px;
+        }
+
+        .live-reco {
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: var(--text-main);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .live-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .live-source-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(148, 163, 184, 0.14);
+        }
+
+        .live-source-row select {
+            width: 100%;
+            padding: 11px 12px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 13px;
+        }
+
+        .live-source-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .mini-bar-track {
+            position: relative;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.15);
+            overflow: hidden;
+        }
+
+        .mini-bar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: inherit;
+        }
+
+        .mini-bar.home {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+
+        .mini-bar.away {
+            background: linear-gradient(90deg, #38bdf8, #2563eb);
+        }
+
+        .summary-box {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .summary-box h4 {
+            margin: 0 0 6px;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .summary-box strong {
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        .confidence-pill {
+            display: inline-block;
+            background: rgba(74, 222, 128, 0.12);
+            color: var(--accent-green);
+            border: 1px solid rgba(74, 222, 128, 0.45);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="dashboard-header">
+        <div class="header-brand">
+            <div class="brand-badge">PM</div>
+            <div class="header-copy">
+                <span class="eyebrow">Match Intelligence Suite</span>
+                <h2>PREDIK<span>MARKA</span> AI</h2>
+            </div>
+        </div>
+
+        <div class="header-metrics">
+            <div class="header-metric">
+                <small>Model</small>
+                <strong>AI Pro</strong>
+            </div>
+            <div class="header-metric">
+                <small>Market</small>
+                <strong>1X2</strong>
+            </div>
+            <div class="header-metric">
+                <small>Status</small>
+                <strong>Live</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="brand-subtitle"><span class="status-pill">Realtime</span> Football Match Intelligence</div>
+
+    <div class="card insight-card">
+        <h3 style="color: var(--accent-gold)">📌 Prinsip Analisis</h3>
+        <p>Model menggunakan data serangan, pertahanan, tendangan sudut, tren form, dan faktor head-to-head untuk menghasilkan probabilitas yang lebih realistis dan profesional.</p>
+    </div>
+    
+    <div class="card">
+        <h3>🏠 Rumah (Home Team)</h3>
+        <div class="full-width">
+            <label>Cari / Ketik Nama Klub atau Negara:</label>
+            <input type="text" id="inputHome" list="listData" oninput="isiDataOtomatis('home')" placeholder="Ketik nama klub atau negara...">
+        </div>
+        
+        <div class="grid-inputs">
+            <div>
+                <label>Rata-rata Gol Cetak</label>
+                <input type="number" id="homeAttack" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Rata-rata Gol Bobol</label>
+                <input type="number" id="homeDefense" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Corner Didapat</label>
+                <input type="number" id="homeCornerGet" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Corner Diberikan</label>
+                <input type="number" id="homeCornerConceded" step="0.01" placeholder="0.00">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🚌 Tamu (Away Team)</h3>
+        <div class="full-width">
+            <label>Cari / Ketik Nama Klub atau Negara:</label>
+            <input type="text" id="inputAway" list="listData" oninput="isiDataOtomatis('away')" placeholder="Ketik nama klub atau negara...">
+        </div>
+        
+        <div class="grid-inputs">
+            <div>
+                <label>Rata-rata Gol Cetak</label>
+                <input type="number" id="awayAttack" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Rata-rata Gol Bobol</label>
+                <input type="number" id="awayDefense" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Corner Didapat</label>
+                <input type="number" id="awayCornerGet" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>Corner Diberikan</label>
+                <input type="number" id="awayCornerConceded" step="0.01" placeholder="0.00">
+            </div>
+        </div>
+    </div>
+
+    <div class="card live-panel">
+        <div class="live-header">
+            <h3 style="color: var(--accent-red)">🔴 Live Match Feed</h3>
+            <div id="liveStatus" class="live-status">OFFLINE</div>
+        </div>
+
+        <div class="live-score-row">
+            <div class="team-name" id="liveHomeTeam">HOME</div>
+            <div class="score-box"><span id="liveHomeScore">0</span> : <span id="liveAwayScore">0</span></div>
+            <div class="team-name" id="liveAwayTeam">AWAY</div>
+        </div>
+
+        <div class="live-meta-line">
+            <span>Minute: <strong id="liveMinute">0'</strong></span>
+            <span>Red cards: <strong id="liveRedCard">0 - 0</strong></span>
+        </div>
+
+        <div id="liveRecommendation" class="live-reco">Waiting for kickoff... Live feed demo can be activated from this panel.</div>
+
+        <div class="live-actions">
+            <button class="secondary-btn" onclick="startLiveDemo()">Start Demo</button>
+            <button class="secondary-btn" onclick="stopLiveDemo()">Stop</button>
+        </div>
+
+        <div class="live-source-row">
+            <div>
+                <label for="liveCompetition">Free live source</label>
+                <select id="liveCompetition">
+                    <option value="bl1">Bundesliga</option>
+                    <option value="pl">Premier League</option>
+                    <option value="laliga">La Liga</option>
+                    <option value="seriea">Serie A</option>
+                </select>
+            </div>
+            <button class="secondary-btn" onclick="connectFreeLiveApi()">Connect API</button>
+        </div>
+        <div class="live-source-meta">
+            <span id="liveSource">Source: local demo</span>
+            <span id="liveLastUpdate">Last update: --</span>
+        </div>
+    </div>
+
+    <div class="card" style="border-color: var(--accent-purple)">
+        <h3 style="color: var(--accent-purple)">🔥 Form & Head-to-Head Tracker</h3>
+        <div class="booster-grid">
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">📈 Tuan Rumah Sedang On-Fire (Tren Menang)</span>
+                    <input type="checkbox" id="formHomeWin" class="switch-input purple-switch">
+                </div>
+                <span class="switch-desc">💡 Dicentang jika tim Home menang 3+ pertandingan beruntun.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">📈 Tamu Sedang On-Fire (Tren Menang)</span>
+                    <input type="checkbox" id="formAwayWin" class="switch-input purple-switch">
+                </div>
+                <span class="switch-desc">💡 Dicentang jika tim Away baru saja menang 3+ pertandingan beruntun di liga.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">⚠️ Tuan Rumah Sedang Krisis (Kalah Beruntun)</span>
+                    <input type="checkbox" id="formHomeLose" class="switch-input purple-switch">
+                </div>
+                <span class="switch-desc">💡 Dicentang jika tim Home kalah terus, ganti pelatih, atau badai cedera.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">⚠️ Tamu Sedang Krisis (Kalah Beruntun)</span>
+                    <input type="checkbox" id="formAwayLose" class="switch-input purple-switch">
+                </div>
+                <span class="switch-desc">💡 Dicentang jika tim Away sedang dalam tren buruk/kalah beruntun belakangan ini.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">⚔️ Dominasi Sejarah (H2H Selalu Menang)</span>
+                    <input type="checkbox" id="h2hDominant" class="switch-input purple-switch">
+                </div>
+                <span class="switch-desc">💡 Dicentang jika dalam sejarah pertemuan, salah satu tim selalu menang mutlak atas lawannya.</span>
+            </div>
+        </div>
+
+        <div class="mini-grid" style="margin-top: 16px;">
+            <div>
+                <label>Form 5 laga terakhir Home (W-D-L)</label>
+                <input type="text" id="homeFormRecent" placeholder="contoh: 3-1-1">
+            </div>
+            <div>
+                <label>Form 5 laga terakhir Away (W-D-L)</label>
+                <input type="text" id="awayFormRecent" placeholder="contoh: 2-2-1">
+            </div>
+            <div>
+                <label>H2H: Home - Draw - Away</label>
+                <input type="text" id="h2hRecent" placeholder="contoh: 2-1-2">
+            </div>
+            <div>
+                <label>Rata-rata gol 5 laga terakhir</label>
+                <input type="text" id="recentGoals" placeholder="contoh: 2.7-1.5">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="color: var(--accent-gold)">📈 xG & Team Impact</h3>
+        <div class="mini-grid">
+            <div>
+                <label>xG Home</label>
+                <input type="number" id="homeXg" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>xG Away</label>
+                <input type="number" id="awayXg" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>xGA Home</label>
+                <input type="number" id="homeXga" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label>xGA Away</label>
+                <input type="number" id="awayXga" step="0.01" placeholder="0.00">
+            </div>
+            <div class="full-width">
+                <label>Absensi pemain kunci Home</label>
+                <input type="text" id="injuriesHome" placeholder="contoh: striker utama, bek tengah">
+            </div>
+            <div class="full-width">
+                <label>Absensi pemain kunci Away</label>
+                <input type="text" id="injuriesAway" placeholder="contoh: gelandang box-to-box, bek kanan">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📊 Klement Analytics Booster</h3>
+        <div class="booster-grid">
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">🌟 Skuad Tuan Rumah Jauh Lebih Mahal</span>
+                    <input type="checkbox" id="boostHomeValue" class="switch-input">
+                </div>
+                <span class="switch-desc">💡 Centang jika tim Tuan Rumah punya nilai skuad jauh lebih kaya dibanding tim Tamu.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">🌟 Skuad Tamu Jauh Lebih Mahal</span>
+                    <input type="checkbox" id="boostAwayValue" class="switch-input">
+                </div>
+                <span class="switch-desc">💡 Centang jika tim Tamu adalah klub kaya bertabur pemain mahal dibanding tim Tuan Rumah.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">🗺️ Keuntungan Geografis / Suporter Fanatik</span>
+                    <input type="checkbox" id="boostGeoHome" class="switch-input">
+                </div>
+                <span class="switch-desc">💡 Centang jika stadion kandang sangat angker/ramai suporter, atau jika tim Tamu capek karena perjalanan jauh.</span>
+            </div>
+            <div class="switch-label">
+                <div class="switch-header-row">
+                    <span class="switch-title">🏆 Faktor Mental Juara / Nama Besar Skuad</span>
+                    <input type="checkbox" id="boostTradisi" class="switch-input">
+                </div>
+                <span class="switch-desc">💡 Centang jika salah satu tim adalah "Tim Raksasa Tradisional" yang aslinya bermental kuat.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-row">
+        <button onclick="hitungPrediksiAll()">MULAI PROSES ANALISIS AI</button>
+        <button class="secondary-btn" onclick="resetSemuaData()">Reset Data</button>
+    </div>
+
+    <div id="resultBox" class="card result-box">
+        <div class="result-header">📊 LAGA: <span id="txtNamaHome"></span> VS <span id="txtNamaAway"></span></div>
+
+        <div class="summary-grid">
+            <div class="summary-box">
+                <h4>Confidence</h4>
+                <strong id="summaryConfidence">--</strong>
+            </div>
+            <div class="summary-box">
+                <h4>Pick Utama</h4>
+                <strong id="summaryPick">--</strong>
+            </div>
+            <div class="summary-box">
+                <h4>Market</h4>
+                <strong id="summaryMarket">--</strong>
+            </div>
+        </div>
+
+        <div id="summaryNote" class="confidence-pill">Model sedang mengevaluasi probabilitas...</div>
+
+        <div class="insight-panel">
+            <h4>📊 Top Match Insights</h4>
+            <div id="topInsights" class="insight-list"></div>
+        </div>
+
+        <div class="mini-graph-card">
+            <div class="mini-graph-title">📉 Mini Match Graph</div>
+            <div id="miniGraph" class="mini-graph-grid"></div>
+        </div>
+        
+        <div class="prob-bar-container">
+            <div class="prob-title">Probabilitas Hasil Pertandingan (1X2)</div>
+            <div class="prob-values">
+                <div class="prob-line">
+                    <span style="color: var(--accent-green)">🟢 <span id="lblHomeName">Home</span> Menang</span>
+                    <span style="color: var(--accent-green)"><span id="valHome">0</span>%</span>
+                </div>
+                <div class="prob-line">
+                    <span style="color: var(--accent-gold)">🟡 Draw (Seri)</span>
+                    <span style="color: var(--accent-gold)"><span id="valDraw">0</span>%</span>
+                </div>
+                <div class="prob-line">
+                    <span style="color: var(--accent-blue)">🔵 <span id="lblAwayName">Away</span> Menang</span>
+                    <span style="color: var(--accent-blue)"><span id="valAway">0</span>%</span>
+                </div>
+            </div>
+            <div class="prob-bar-wrapper">
+                <div id="barHome" class="bar-home" style="width: 33.3%"></div>
+                <div id="barDraw" class="bar-draw" style="width: 33.3%"></div>
+                <div id="barAway" class="bar-away" style="width: 33.3%"></div>
+            </div>
+        </div>
+
+        <div class="market-grid">
+            <div class="market-item">
+                <h4>Gol (O / U 2.5)</h4>
+                <div id="predictOU" class="market-value">-</div>
+            </div>
+            <div class="market-item">
+                <h4>Sepak Pojok</h4>
+                <div id="predictCorner" class="market-value">-</div>
+            </div>
+            <div class="market-item">
+                <h4>BTTS (Kedua Gol)</h4>
+                <div id="predictBTTS" class="market-value">-</div>
+            </div>
+        </div>
+
+        <div class="analysis-box">
+            <h3>🧠 Analisis Singkat</h3>
+            <p id="analysisShort">Model belum menghasilkan ringkasan analisis.</p>
+        </div>
+
+        <div class="reason-box">
+            <h3>💡 Alasan Pilihan Utama</h3>
+            <p id="reasonDetail">Belum ada alasan yang dihasilkan.</p>
+            <div id="reasonBadges" class="stat-badges"></div>
+        </div>
+
+        <h3 style="margin-top: 20px; font-size: 13px; color: var(--text-main)">📋 5 Skor Kemungkinan Terbesar</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Prediksi Skor</th>
+                    <th>Peluang</th>
+                </tr>
+            </thead>
+            <tbody id="resultTableBody"></tbody>
+        </table>
+
+        <div class="disclaimer-box">
+            <h3>⚠️ Disclaimer</h3>
+            <p>Prediksi ini dibuat berdasarkan model statistik, tren form, dan faktor pertandingan. Hasil tidak menjamin kejadian akhir pertandingan dan sebaiknya tetap dikombinasikan dengan analisis manusia sebelum mengambil keputusan.</p>
+        </div>
+    </div>
+</div>
+
+<datalist id="listData"></datalist>
+
+<script>
+    const databaseNegara = {
+        // =========================================================================
+        // 🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER LEAGUE (20 KLUB)
+        // Format: [HomeAttack, HomeDefense, AwayAttack, AwayDefense, HomeCornerGet, HomeCornerCon, AwayCornerGet, AwayCornerCon]
+        // =========================================================================
+        "Arsenal": [2.10, 0.65, 1.65, 0.80, 6.40, 3.10, 5.80, 3.90],
+        "Aston Villa": [1.65, 1.25, 1.30, 1.35, 5.50, 4.20, 4.60, 4.90],
+        "Bournemouth": [1.70, 1.30, 1.35, 1.55, 5.30, 4.50, 4.50, 5.20],
+        "Brentford": [1.60, 1.30, 1.30, 1.45, 4.90, 5.00, 4.10, 5.60],
+        "Brighton": [1.50, 1.15, 1.25, 1.25, 5.70, 4.10, 4.80, 4.80],
+        "Chelsea": [1.70, 1.30, 1.35, 1.45, 5.90, 4.00, 5.10, 4.60],
+        "Crystal Palace": [1.25, 1.25, 0.90, 1.45, 4.70, 4.80, 4.00, 5.30],
+        "Everton": [1.40, 1.25, 1.10, 1.40, 4.60, 5.10, 3.90, 5.50],
+        "Fulham": [1.40, 1.25, 1.10, 1.45, 5.10, 4.60, 4.30, 5.10],
+        "Ipswich Town": [1.10, 1.80, 0.85, 2.10, 4.10, 5.90, 3.50, 6.40],
+        "Leicester City": [1.20, 1.65, 0.95, 1.90, 4.30, 5.60, 3.70, 6.10],
+        "Leeds United": [1.45, 1.40, 1.15, 1.55, 4.60, 5.20, 4.00, 5.80],
+        "Liverpool": [1.85, 1.30, 1.45, 1.50, 6.30, 3.60, 5.60, 4.40],
+        "Manchester City": [2.25, 0.80, 1.80, 1.05, 7.20, 2.80, 6.30, 3.50],
+        "Manchester United": [1.95, 1.25, 1.65, 1.40, 5.80, 4.40, 5.00, 4.90],
+        "Newcastle United": [1.55, 1.35, 1.25, 1.55, 5.80, 4.30, 4.70, 5.10],
+        "Nottingham Forest": [1.40, 1.30, 1.15, 1.40, 4.70, 4.90, 4.10, 5.00],
+        "Sunderland": [1.20, 1.20, 1.00, 1.35, 4.40, 5.00, 3.80, 5.40],
+        "Tottenham Hotspur": [1.45, 1.40, 1.10, 1.60, 6.60, 3.90, 5.30, 5.00],
+        "West Ham United": [1.40, 1.60, 1.05, 1.85, 4.80, 5.40, 4.00, 5.90],
+
+        // =========================================================================
+        // 🇪🇸 LA LIGA (20 KLUB)
+        // =========================================================================
+        "Alaves": [1.35, 1.40, 0.95, 1.55, 4.50, 4.70, 3.90, 5.10],
+        "Athletic Bilbao": [1.30, 1.45, 0.95, 1.60, 5.50, 4.00, 4.50, 4.80],
+        "Atletico Madrid": [1.85, 1.05, 1.40, 1.25, 5.50, 3.70, 4.50, 4.40],
+        "Barcelona": [2.70, 0.85, 2.30, 1.05, 6.30, 3.40, 5.70, 4.00],
+        "Celta Vigo": [1.60, 1.20, 1.20, 1.35, 5.00, 4.40, 4.30, 5.00],
+        "Elche": [1.50, 1.45, 1.10, 1.55, 4.50, 4.90, 3.80, 5.30],
+        "Espanyol": [1.30, 1.35, 0.95, 1.55, 4.40, 5.00, 3.70, 5.50],
+        "Getafe": [1.00, 0.95, 0.70, 1.05, 4.20, 4.30, 3.60, 4.80],
+        "Girona": [2.10, 1.25, 1.55, 1.35, 5.50, 4.20, 4.80, 4.70],
+        "Las Palmas": [1.20, 1.35, 0.90, 1.75, 4.50, 4.90, 3.70, 5.50],
+        "Leganes": [1.10, 1.30, 0.80, 1.55, 4.00, 5.00, 3.40, 5.40],
+        "Levante": [1.45, 1.55, 1.05, 1.65, 4.60, 4.90, 4.00, 5.40],
+        "Mallorca": [1.15, 1.10, 0.95, 1.35, 4.50, 4.40, 3.90, 4.90],
+        "Osasuna": [1.35, 1.25, 1.00, 1.40, 4.70, 4.60, 4.00, 5.00],
+        "Rayo Vallecano": [1.25, 1.10, 0.90, 1.25, 4.80, 4.40, 4.10, 4.90],
+        "Real Betis": [1.75, 1.20, 1.35, 1.35, 5.30, 4.10, 4.40, 4.70],
+        "Real Madrid": [2.30, 0.85, 1.75, 1.00, 6.90, 3.00, 5.90, 3.70],
+        "Real Sociedad": [1.70, 1.55, 1.40, 1.65, 5.40, 4.10, 4.70, 4.60],
+        "Sevilla": [1.40, 1.50, 1.05, 1.65, 5.10, 4.40, 4.20, 5.10],
+        "Villarreal": [2.15, 1.15, 1.65, 1.30, 5.20, 4.60, 4.60, 5.00],
+
+        // =========================================================================
+        // 🇮🇹 SERIE A (20 KLUB)
+        // =========================================================================
+        "AC Milan": [2.05, 1.10, 1.65, 1.25, 5.90, 4.00, 5.20, 4.40],
+        "Atalanta": [2.00, 1.10, 1.45, 1.25, 6.00, 3.70, 4.90, 4.50],
+        "Bologna": [1.50, 1.15, 1.20, 1.25, 5.20, 4.10, 4.40, 4.60],
+        "Cagliari": [1.35, 1.45, 0.95, 1.65, 4.70, 4.90, 3.90, 5.40],
+        "Como": [1.90, 0.75, 1.50, 0.85, 5.00, 4.10, 4.50, 4.60],
+        "Empoli": [1.10, 1.30, 0.85, 1.55, 4.20, 5.10, 3.60, 5.40],
+        "Fiorentina": [1.45, 1.30, 1.10, 1.40, 5.30, 4.30, 4.50, 4.90],
+        "Genoa": [1.30, 1.40, 0.90, 1.50, 4.50, 4.70, 4.00, 5.10],
+        "Hellas Verona": [1.30, 1.60, 1.00, 1.90, 4.30, 5.30, 3.90, 5.70],
+        "Inter Milan": [2.50, 0.60, 2.10, 0.70, 6.60, 3.10, 5.80, 3.60],
+        "Juventus": [1.85, 0.85, 1.35, 0.95, 5.50, 3.50, 4.70, 4.00],
+        "Lazio": [1.55, 1.25, 1.25, 1.35, 5.60, 4.00, 4.80, 4.60],
+        "Lecce": [1.25, 1.55, 0.90, 1.80, 4.60, 4.90, 3.60, 5.70],
+        "Monza": [1.10, 1.35, 0.90, 1.55, 4.10, 4.90, 3.70, 5.20],
+        "Napoli": [2.10, 1.00, 1.60, 1.15, 5.80, 3.80, 5.00, 4.30],
+        "Parma": [1.30, 1.55, 1.05, 1.65, 4.60, 4.70, 4.10, 5.30],
+        "AS Roma": [1.80, 0.75, 1.45, 0.85, 5.70, 3.90, 4.70, 4.40],
+        "Sassuolo": [1.40, 1.45, 1.15, 1.55, 4.80, 4.60, 4.20, 5.10],
+        "Torino": [1.25, 1.60, 1.00, 1.80, 4.70, 4.40, 4.10, 4.90],
+        "Udinese": [1.45, 1.45, 1.10, 1.60, 4.60, 4.60, 4.10, 5.20],
+        
+        // UCL
+        "AC Milan": [2.05, 1.10, 1.65, 1.25, 5.90, 4.00, 5.20, 4.40],
+        "Arsenal": [2.10, 0.65, 1.65, 0.80, 6.40, 3.10, 5.80, 3.90],
+        "Aston Villa": [1.65, 1.25, 1.30, 1.35, 5.50, 4.20, 4.60, 4.90],
+        "Atalanta": [2.00, 1.10, 1.45, 1.25, 6.00, 3.70, 4.90, 4.50],
+        "Athletic Bilbao": [1.30, 1.45, 0.95, 1.60, 5.50, 4.00, 4.50, 4.80],
+        "Atletico Madrid": [1.85, 1.05, 1.40, 1.25, 5.50, 3.70, 4.50, 4.40],
+        "Barcelona": [2.70, 0.85, 2.30, 1.05, 6.30, 3.40, 5.70, 4.00],
+        "Bayern München": [2.80, 0.80, 2.30, 1.10, 6.80, 3.20, 6.10, 3.80],
+        "Bologna": [1.50, 1.15, 1.20, 1.25, 5.20, 4.10, 4.40, 4.60],
+        "Borussia Dortmund": [2.20, 1.10, 1.70, 1.40, 5.80, 4.10, 4.90, 4.80],
+        "Brest": [1.40, 1.20, 1.10, 1.35, 4.60, 4.80, 3.90, 5.20],
+        "Celtic": [1.80, 1.10, 1.35, 1.45, 6.10, 3.80, 5.10, 4.70],
+        "Club Brugge": [1.55, 1.25, 1.15, 1.40, 5.20, 4.40, 4.30, 5.00],
+        "Crvena Zvezda": [1.30, 1.50, 0.95, 1.70, 4.50, 5.10, 3.70, 5.60],
+        "Feyenoord": [1.70, 1.20, 1.30, 1.40, 5.70, 4.10, 4.60, 4.90],
+        "Girona": [2.10, 1.25, 1.55, 1.35, 5.50, 4.20, 4.80, 4.70],
+        "GNK Dinamo": [1.35, 1.45, 1.00, 1.65, 4.70, 4.90, 3.90, 5.40],
+        "Inter Milan": [2.50, 0.60, 2.10, 0.70, 6.60, 3.10, 5.80, 3.60],
+        "Juventus": [1.85, 0.85, 1.35, 0.95, 5.50, 3.50, 4.70, 4.00],
+        "Leverkusen": [2.40, 0.90, 2.00, 1.20, 6.20, 3.50, 5.40, 4.10],
+        "Lille": [1.60, 1.20, 1.20, 1.35, 5.10, 4.30, 4.20, 4.90],
+        "Liverpool": [1.85, 1.30, 1.45, 1.50, 6.30, 3.60, 5.60, 4.40],
+        "Manchester City": [2.25, 0.80, 1.80, 1.05, 7.20, 2.80, 6.30, 3.50],
+        "AS Monaco": [1.75, 1.25, 1.35, 1.40, 5.40, 4.20, 4.50, 4.80],
+        "Paris Saint-Germain": [2.30, 0.90, 1.80, 1.20, 6.50, 3.30, 5.50, 4.20],
+        "PSV Eindhoven": [2.10, 0.95, 1.65, 1.25, 6.30, 3.70, 5.20, 4.50],
+        "RB Leipzig": [1.90, 1.15, 1.45, 1.35, 5.60, 4.00, 4.70, 4.70],
+        "Real Madrid": [2.30, 0.85, 1.75, 1.00, 6.90, 3.00, 5.90, 3.70],
+        "Red Bull Salzburg": [1.45, 1.40, 1.10, 1.55, 4.80, 4.60, 4.10, 5.10],
+        "Shakhtar Donetsk": [1.35, 1.35, 1.00, 1.50, 4.60, 4.80, 3.90, 5.30],
+        "Slovan Bratislava": [1.10, 1.75, 0.80, 2.05, 4.00, 5.80, 3.40, 6.30],
+        "Sparta Praha": [1.30, 1.45, 0.95, 1.60, 4.70, 4.90, 3.80, 5.50],
+        "Sporting CP": [2.00, 0.90, 1.60, 1.15, 6.10, 3.60, 5.00, 4.40],
+        "Sturm Graz": [1.25, 1.50, 0.90, 1.70, 4.40, 5.00, 3.70, 5.60],
+        "Stuttgart": [1.80, 1.30, 1.30, 1.45, 5.50, 4.20, 4.60, 4.90],
+        "Young Boys": [1.20, 1.60, 0.85, 1.85, 4.30, 5.30, 3.60, 5.90],
+    
+        // =========================================================================
+        // 🌍 DATABASE NEGARA LENGKAP
+        // =========================================================================
+        "Afrika Selatan": [1.40, 0.85, 1.05, 1.10, 4.6, 4.2, 3.9, 4.5],
+        "Aljazair": [1.80, 0.75, 1.25, 1.05, 5.2, 3.8, 4.4, 4.1],
+        "Amerika Serikat": [2.10, 0.70, 1.25, 1.15, 5.4, 4.0, 4.6, 4.9],
+        "Arab Saudi": [1.65, 0.70, 1.15, 1.10, 4.8, 4.2, 4.1, 4.5],
+        "Argentina": [2.10, 0.35, 1.65, 0.55, 6.2, 3.1, 5.5, 3.4],
+        "Australia": [2.20, 0.65, 1.55, 0.95, 6.1, 3.9, 5.0, 4.2],
+        "Austria": [1.75, 1.00, 1.30, 1.20, 5.1, 4.3, 4.5, 4.7],
+        "Belanda": [2.55, 0.85, 1.80, 1.10, 6.0, 3.8, 5.3, 4.1],
+        "Belgia": [2.10, 0.80, 1.55, 1.00, 6.3, 3.7, 5.1, 4.0],
+        "Brasil": [2.25, 0.60, 1.45, 0.95, 6.6, 3.3, 5.4, 3.8],
+        "Cape Verde": [1.45, 0.85, 1.10, 1.15, 5.2, 4.1, 4.4, 4.8],
+        "Ceko": [1.60, 1.05, 1.20, 1.25, 5.0, 4.5, 4.3, 4.8],
+        "Cile": [1.40, 0.95, 0.95, 1.30, 4.9, 4.4, 4.0, 4.8],
+        "Denmark": [1.80, 0.85, 1.35, 1.10, 5.7, 3.9, 5.0, 4.3],
+        "DR Congo": [1.45, 0.75, 1.10, 0.95, 4.8, 4.2, 4.0, 4.5],
+        "Ekuador": [1.50, 0.70, 1.10, 1.00, 5.0, 4.1, 4.2, 4.4],
+        "Ghana": [1.45, 0.95, 1.05, 1.25, 4.7, 4.5, 4.0, 4.9],
+        "Hongaria": [1.50, 1.10, 1.15, 1.30, 4.8, 4.6, 4.1, 4.9],
+        "Indonesia": [1.35, 1.20, 0.95, 1.45, 4.4, 4.8, 3.8, 5.2],
+        "Inggris": [2.45, 0.55, 1.60, 0.85, 6.9, 3.0, 5.6, 3.6],
+        "Iran": [2.15, 0.50, 1.60, 0.80, 5.3, 3.8, 4.5, 4.1],
+        "Irak": [1.75, 0.80, 1.20, 1.05, 5.0, 4.0, 4.2, 4.3],
+        "Irlandia": [1.25, 1.15, 0.90, 1.40, 4.6, 4.7, 3.9, 5.1],
+        "Islandia": [1.40, 1.30, 1.05, 1.50, 4.7, 4.9, 4.1, 5.3],
+        "Italia": [1.95, 0.75, 1.40, 0.90, 5.8, 3.9, 4.9, 4.1],
+        "Jamaika": [1.45, 0.90, 1.00, 1.25, 4.5, 4.6, 3.9, 4.8],
+        "Jepang": [2.90, 0.60, 2.10, 0.85, 6.4, 3.6, 5.9, 4.0],
+        "Jerman": [2.50, 0.90, 1.75, 1.15, 7.1, 3.5, 6.0, 4.3],
+        "Kamerun": [1.40, 0.90, 1.00, 1.20, 4.8, 4.3, 4.1, 4.6],
+        "Kanada": [1.70, 0.85, 1.20, 1.20, 5.1, 4.3, 4.4, 4.7],
+        "Kolombia": [1.75, 0.65, 1.20, 0.90, 5.4, 3.9, 4.6, 4.2],
+        "Korea Selatan": [2.30, 0.75, 1.70, 0.90, 5.9, 3.8, 5.1, 4.2],
+        "Kosta Rika": [1.35, 0.95, 0.90, 1.40, 4.2, 5.1, 3.6, 5.5],
+        "Kroasia": [1.70, 0.90, 1.50, 1.05, 5.3, 4.2, 4.7, 4.5],
+        "Maroko": [1.95, 0.45, 1.35, 0.75, 5.1, 3.5, 4.3, 3.9],
+        "Meksiko": [1.80, 0.75, 1.15, 1.10, 5.6, 3.8, 4.8, 4.2],
+        "Mesir": [1.90, 0.60, 1.20, 0.95, 5.1, 3.7, 4.3, 4.0],
+        "Nigeria": [1.70, 0.75, 1.25, 1.00, 5.3, 4.0, 4.5, 4.2],
+        "Norwegia": [1.85, 1.10, 1.35, 1.30, 5.4, 4.2, 4.6, 4.7],
+        "Panama": [1.50, 1.00, 1.05, 1.35, 4.7, 4.7, 4.1, 5.0],
+        "Pantai Gading": [1.70, 0.70, 1.20, 1.00, 5.2, 3.9, 4.4, 4.2],
+        "Paraguay": [1.25, 0.90, 0.85, 1.15, 4.5, 4.4, 3.8, 4.7],
+        "Peru": [1.30, 0.90, 0.90, 1.20, 4.6, 4.5, 3.8, 4.8],
+        "Polandia": [1.70, 1.10, 1.20, 1.35, 4.9, 4.9, 4.2, 5.2],
+        "Portugal": [2.80, 0.50, 1.90, 0.80, 7.3, 2.8, 6.1, 3.3],
+        "Prancis": [2.35, 0.65, 1.85, 0.90, 5.9, 3.4, 5.3, 3.9],
+        "Qatar": [1.60, 1.10, 1.05, 1.40, 4.6, 4.8, 3.9, 5.1],
+        "Rumania": [1.45, 1.00, 1.10, 1.20, 4.6, 4.5, 4.0, 4.8],
+        "Selandia Baru": [1.80, 0.80, 1.15, 1.30, 4.8, 4.6, 4.1, 5.0],
+        "Senegal": [1.85, 0.50, 1.30, 0.80, 5.2, 3.3, 4.4, 3.7],
+        "Serbia": [1.55, 1.15, 1.20, 1.30, 4.9, 4.5, 4.2, 4.8],
+        "Skotlandia": [1.35, 1.20, 0.95, 1.40, 4.6, 4.8, 3.9, 5.2],
+        "Slovakia": [1.45, 1.05, 1.10, 1.25, 4.7, 4.5, 4.1, 4.8],
+        "Slovenia": [1.35, 1.00, 1.05, 1.20, 4.5, 4.4, 3.9, 4.7],
+        "Spanyol": [2.60, 0.60, 1.70, 0.95, 7.6, 2.6, 6.3, 3.4],
+        "Swedia": [1.90, 1.05, 1.40, 1.25, 5.5, 4.2, 4.8, 4.6],
+        "Swiss": [1.65, 0.90, 1.30, 1.15, 5.2, 4.3, 4.5, 4.6],
+        "Tunisia": [1.35, 0.65, 0.95, 0.90, 4.6, 4.1, 3.8, 4.3],
+        "Turki": [1.75, 1.15, 1.30, 1.30, 5.5, 4.6, 4.8, 4.9],
+        "UEA": [1.55, 0.90, 1.10, 1.20, 4.7, 4.4, 4.0, 4.6],
+        "Ukraina": [1.60, 0.95, 1.25, 1.20, 5.1, 4.5, 4.3, 4.8],
+        "Uruguay": [1.90, 0.70, 1.30, 1.10, 5.5, 4.0, 4.6, 4.3],
+        "Uzbekistan": [1.55, 0.80, 1.15, 1.05, 4.8, 4.2, 4.0, 4.5],
+        "Venezuela": [1.30, 0.95, 0.95, 1.25, 4.5, 4.6, 3.9, 4.9],
+        "Wales": [1.40, 0.95, 1.10, 1.20, 4.8, 4.5, 4.1, 4.7],
+        "Yunani": [1.50, 0.95, 1.15, 1.15, 4.9, 4.3, 4.2, 4.6]
+    };
+
+    function normalisasiDatabase() {
+        Object.keys(databaseNegara).forEach((nama) => {
+            const data = databaseNegara[nama];
+            const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+            const normalized = [
+                Number(clamp(data[0] + 0.04, 0.65, 3.15).toFixed(2)),
+                Number(clamp(data[1] + 0.03, 0.35, 2.10).toFixed(2)),
+                Number(clamp(data[2] + 0.04, 0.65, 3.15).toFixed(2)),
+                Number(clamp(data[3] + 0.03, 0.35, 2.10).toFixed(2)),
+                Number(clamp(data[4] + 0.18, 3.00, 7.80).toFixed(2)),
+                Number(clamp(data[5] + 0.14, 2.60, 6.80).toFixed(2)),
+                Number(clamp(data[6] + 0.18, 3.00, 7.80).toFixed(2)),
+                Number(clamp(data[7] + 0.14, 2.60, 6.80).toFixed(2))
+            ];
+
+            databaseNegara[nama] = normalized;
+        });
+    }
+
+    normalisasiDatabase();
+
+    window.onload = function() {
+        const datalist = document.getElementById('listData');
+        Object.keys(databaseNegara).sort().forEach(nama => {
+            let option = document.createElement('option');
+            option.value = nama;
+            datalist.appendChild(option);
+        });
+
+        renderLiveState();
+    }
+
+    function isiDataOtomatis(tipe) {
+        if (tipe === 'home') {
+            const nama = document.getElementById('inputHome').value;
+            if (databaseNegara[nama]) {
+                document.getElementById('homeAttack').value = databaseNegara[nama][0];
+                document.getElementById('homeDefense').value = databaseNegara[nama][1];
+                document.getElementById('homeCornerGet').value = databaseNegara[nama][4];
+                document.getElementById('homeCornerConceded').value = databaseNegara[nama][5];
+            }
+        } else if (tipe === 'away') {
+            const nama = document.getElementById('inputAway').value;
+            if (databaseNegara[nama]) {
+                document.getElementById('awayAttack').value = databaseNegara[nama][2];
+                document.getElementById('awayDefense').value = databaseNegara[nama][3];
+                document.getElementById('awayCornerGet').value = databaseNegara[nama][6];
+                document.getElementById('awayCornerConceded').value = databaseNegara[nama][7];
+            }
+        }
+    }
+
+    function resetSemuaData() {
+        const fieldIds = [
+            'inputHome', 'inputAway',
+            'homeAttack', 'homeDefense', 'homeCornerGet', 'homeCornerConceded',
+            'awayAttack', 'awayDefense', 'awayCornerGet', 'awayCornerConceded',
+            'homeFormRecent', 'awayFormRecent', 'h2hRecent', 'recentGoals',
+            'homeXg', 'awayXg', 'homeXga', 'awayXga', 'injuriesHome', 'injuriesAway',
+            'formHomeWin', 'formAwayWin', 'formHomeLose', 'formAwayLose',
+            'h2hDominant', 'boostHomeValue', 'boostAwayValue', 'boostGeoHome', 'boostTradisi'
+        ];
+
+        fieldIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === 'checkbox') {
+                el.checked = false;
+            } else {
+                el.value = '';
+            }
+        });
+
+        document.getElementById('resultBox').style.display = 'none';
+        document.getElementById('analysisShort').innerText = 'Model belum menghasilkan ringkasan analisis.';
+        document.getElementById('reasonDetail').innerText = 'Belum ada alasan yang dihasilkan.';
+        document.getElementById('reasonBadges').innerHTML = '';
+        document.getElementById('topInsights').innerHTML = '';
+
+        liveFeed.isLive = false;
+        liveFeed.minute = 0;
+        liveFeed.scoreHome = 0;
+        liveFeed.scoreAway = 0;
+        liveFeed.redHome = 0;
+        liveFeed.redAway = 0;
+        liveFeed.eventCounter = 0;
+        if (liveFeed.timer) {
+            clearInterval(liveFeed.timer);
+            liveFeed.timer = null;
+        }
+        if (liveFeed.socket) {
+            liveFeed.socket.close();
+            liveFeed.socket = null;
+        }
+        liveFeed.mode = 'demo';
+        renderLiveState();
+    }
+
+    function parseScoreRecord(value) {
+        const raw = (value || '').trim();
+        if (!raw) return { wins: 0, draws: 0, losses: 0 };
+        const parts = raw.split('-').map(item => Number(item.trim()));
+        if (parts.length !== 3 || parts.some(isNaN)) {
+            return { wins: 0, draws: 0, losses: 0 };
+        }
+        return { wins: Math.max(0, parts[0]), draws: Math.max(0, parts[1]), losses: Math.max(0, parts[2]) };
+    }
+
+    function parseH2H(value) {
+        const raw = (value || '').trim();
+        if (!raw) return { home: 0, draw: 0, away: 0 };
+        const parts = raw.split('-').map(item => Number(item.trim()));
+        if (parts.length !== 3 || parts.some(isNaN)) {
+            return { home: 0, draw: 0, away: 0 };
+        }
+        return { home: Math.max(0, parts[0]), draw: Math.max(0, parts[1]), away: Math.max(0, parts[2]) };
+    }
+
+    function parseRecentGoals(value) {
+        const raw = (value || '').trim();
+        if (!raw) return { home: 1.5, away: 1.5 };
+        const parts = raw.split('-').map(item => Number(item.trim()));
+        if (parts.length !== 2 || parts.some(isNaN)) {
+            return { home: 1.5, away: 1.5 };
+        }
+        return { home: Math.max(0.1, parts[0]), away: Math.max(0.1, parts[1]) };
+    }
+
+    function parseInjuries(value) {
+        return (value || '').split(',').map(item => item.trim()).filter(Boolean);
+    }
+
+    const liveFeed = {
+        isLive: false,
+        minute: 0,
+        scoreHome: 0,
+        scoreAway: 0,
+        redHome: 0,
+        redAway: 0,
+        timer: null,
+        eventCounter: 0,
+        source: 'Demo free match feed',
+        socket: null,
+        mode: 'demo'
+    };
+
+    function connectLiveFeed() {
+        liveFeed.source = 'Free demo feed (replace with WebSocket/WebHook payload in production)';
+        liveFeed.mode = 'demo';
+        return {
+            status: 'demo',
+            source: liveFeed.source,
+            note: 'Simulation is running locally; connect actual live match API to replace this demo.'
+        };
+    }
+
+    function applyLivePayload(payload) {
+        if (!payload || !payload.isLive) {
+            stopLiveDemo();
+            return;
+        }
+
+        liveFeed.isLive = true;
+        liveFeed.minute = Number(payload.minute) || 0;
+        liveFeed.scoreHome = Number(payload.scoreHome) || 0;
+        liveFeed.scoreAway = Number(payload.scoreAway) || 0;
+        liveFeed.redHome = Number(payload.redHome) || 0;
+        liveFeed.redAway = Number(payload.redAway) || 0;
+        liveFeed.source = payload.source || 'Free API';
+        liveFeed.mode = 'api';
+        document.getElementById('liveSource').innerText = `Source: ${liveFeed.source}`;
+        document.getElementById('liveLastUpdate').innerText = `Last update: ${new Date().toLocaleTimeString('id-ID')}`;
+        renderLiveState();
+    }
+
+    async function connectFreeLiveApi() {
+        stopLiveDemo();
+        const league = document.getElementById('liveCompetition').value;
+        const sourceEl = document.getElementById('liveSource');
+        sourceEl.innerText = 'Source: connecting...';
+
+        try {
+            const response = await fetch(`/api/live?league=${encodeURIComponent(league)}`);
+            if (!response.ok) throw new Error(`API HTTP ${response.status}`);
+            const payload = await response.json();
+            if (!payload.isLive) {
+                sourceEl.innerText = `Source: ${payload.source || 'Free API'} (no live match found)`;
+                document.getElementById('liveRecommendation').innerText = 'Tidak ada pertandingan live pada kompetisi ini saat ini.';
+                return;
+            }
+
+            applyLivePayload(payload);
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            liveFeed.socket = new WebSocket(`${protocol}//${window.location.host}/ws?league=${encodeURIComponent(league)}`);
+            liveFeed.socket.onmessage = event => {
+                try {
+                    applyLivePayload(JSON.parse(event.data));
+                } catch (error) {
+                    console.warn('Invalid live WebSocket payload', error);
+                }
+            };
+            liveFeed.socket.onclose = () => {
+                if (liveFeed.mode === 'api') sourceEl.innerText = 'Source: API disconnected';
+            };
+        } catch (error) {
+            sourceEl.innerText = 'Source: unavailable, use Start Demo';
+            document.getElementById('liveRecommendation').innerText = 'API gratis belum tersambung. Jalankan server.js, lalu buka http://localhost:8787.';
+            console.warn('Free live API connection failed', error);
+        }
+    }
+
+    function buildLiveRecommendation() {
+        const homeName = (document.getElementById('inputHome').value || 'HOME').trim() || 'HOME';
+        const awayName = (document.getElementById('inputAway').value || 'AWAY').trim() || 'AWAY';
+
+        if (!liveFeed.isLive) {
+            return 'Waiting for kickoff... Live feed demo can be activated from this panel.';
+        }
+
+        const diff = liveFeed.scoreHome - liveFeed.scoreAway;
+
+        if (liveFeed.minute < 45) {
+            return `${homeName} vs ${awayName} sedang masuk fase awal. Pengamatan masih netral, fokus pada kontrol bola dan intensitas pressing.`;
+        }
+
+        if (liveFeed.minute < 60) {
+            if (diff > 0) {
+                return `Babak kedua mulai bergerak. ${homeName} unggul ${liveFeed.scoreHome}-${liveFeed.scoreAway}, jadi pilihan utama cenderung ${homeName} dengan peluang lebih kuat saat momentum sedang tinggi.`;
+            }
+            if (diff < 0) {
+                return `Babak kedua mulai bergerak. ${awayName} unggul ${liveFeed.scoreAway}-${liveFeed.scoreHome}, jadi pendekatan lebih aman adalah ${awayName} sebagai momentum away side.`;
+            }
+            return `Babak kedua masih seimbang ${liveFeed.scoreHome}-${liveFeed.scoreAway}. Nilai rekomendasi paling aman adalah pilihan market yang mengikuti lini serangan dan kualitas skuad.`;
+        }
+
+        if (liveFeed.minute < 75) {
+            if (diff > 0) {
+                return `${homeName} memimpin dan mulai mendikte tempo. Tren ini membuat ${homeName} lebih layak dipilih untuk market 1X2 atau over jika lini serangan lebih aktif.`;
+            }
+            if (diff < 0) {
+                return `${awayName} tampil lebih agresif di fase akhir. Kartu merah atau gol cepat berikutnya bisa memperbesar kans ${awayName} menutup pertandingan.`;
+            }
+            return `Skor imbang di menit ${liveFeed.minute}. Dalam kondisi seperti ini, analisis lebih condong ke pilihan seri atau over jika kedua tim masih membuka ruang.`;
+        }
+
+        if (diff > 0) {
+            return `Menit ${liveFeed.minute} dan ${homeName} memimpin. Kekuatan momentum saat ini memberi edge yang cukup besar untuk ${homeName} sampai akhir match.`;
+        }
+        if (diff < 0) {
+            return `Menit ${liveFeed.minute} dan ${awayName} memimpin. Peluang ${awayName} makin realistis, terutama jika serangan balik terus diteruskan.`;
+        }
+        return `Menit ${liveFeed.minute} dengan skor imbang. Kondisi ini sangat sensitif terhadap gol berikutnya, jadi rekomendasi harus hati-hati dan mengikuti jalur momentum.`;
+    }
+
+    function renderLiveState() {
+        const statusEl = document.getElementById('liveStatus');
+        const homeScoreEl = document.getElementById('liveHomeScore');
+        const awayScoreEl = document.getElementById('liveAwayScore');
+        const minuteEl = document.getElementById('liveMinute');
+        const redCardEl = document.getElementById('liveRedCard');
+        const recommendationEl = document.getElementById('liveRecommendation');
+        const homeNameEl = document.getElementById('liveHomeTeam');
+        const awayNameEl = document.getElementById('liveAwayTeam');
+
+        const homeName = (document.getElementById('inputHome').value || 'HOME').trim() || 'HOME';
+        const awayName = (document.getElementById('inputAway').value || 'AWAY').trim() || 'AWAY';
+
+        homeNameEl.innerText = homeName.toUpperCase();
+        awayNameEl.innerText = awayName.toUpperCase();
+        homeScoreEl.innerText = liveFeed.scoreHome;
+        awayScoreEl.innerText = liveFeed.scoreAway;
+        minuteEl.innerText = `${liveFeed.minute}'`;
+        redCardEl.innerText = `${liveFeed.redHome} - ${liveFeed.redAway}`;
+        recommendationEl.innerText = buildLiveRecommendation();
+
+        if (liveFeed.isLive) {
+            statusEl.classList.add('live');
+            statusEl.innerText = 'LIVE';
+        } else {
+            statusEl.classList.remove('live');
+            statusEl.innerText = 'OFFLINE';
+        }
+    }
+
+    function startLiveDemo() {
+        connectLiveFeed();
+        document.getElementById('liveSource').innerText = 'Source: local demo feed';
+        document.getElementById('liveLastUpdate').innerText = `Last update: ${new Date().toLocaleTimeString('id-ID')}`;
+
+        if (liveFeed.timer) {
+            clearInterval(liveFeed.timer);
+        }
+
+        liveFeed.isLive = true;
+        liveFeed.minute = 45;
+        liveFeed.scoreHome = 1;
+        liveFeed.scoreAway = 0;
+        liveFeed.redHome = 0;
+        liveFeed.redAway = 0;
+        liveFeed.eventCounter = 0;
+
+        renderLiveState();
+
+        liveFeed.timer = setInterval(() => {
+            if (!liveFeed.isLive) return;
+
+            liveFeed.minute = Math.min(90, liveFeed.minute + 2);
+            liveFeed.eventCounter += 1;
+
+            if (liveFeed.eventCounter % 3 === 0) {
+                const chance = Math.random();
+                if (chance < 0.33) {
+                    liveFeed.scoreHome += 1;
+                } else if (chance < 0.66) {
+                    liveFeed.scoreAway += 1;
+                }
+            }
+
+            if (liveFeed.eventCounter % 5 === 0 && Math.random() < 0.18) {
+                if (Math.random() < 0.5) {
+                    liveFeed.redHome += 1;
+                } else {
+                    liveFeed.redAway += 1;
+                }
+            }
+
+            if (liveFeed.minute >= 90) {
+                liveFeed.isLive = false;
+                clearInterval(liveFeed.timer);
+                liveFeed.timer = null;
+            }
+
+            renderLiveState();
+        }, 1800);
+    }
+
+    function stopLiveDemo() {
+        liveFeed.isLive = false;
+        if (liveFeed.timer) {
+            clearInterval(liveFeed.timer);
+            liveFeed.timer = null;
+        }
+        if (liveFeed.socket) {
+            liveFeed.socket.close();
+            liveFeed.socket = null;
+        }
+        liveFeed.mode = 'demo';
+        renderLiveState();
+    }
+
+    function faktorial(n) {
+        return (n === 0 || n === 1) ? 1 : n * faktorial(n - 1);
+    }
+
+    function poisson(lambda, x) {
+        return (Math.pow(lambda, x) * Math.exp(-lambda)) / faktorial(x);
+    }
+
+    function hitungPrediksiAll() {
+        const namaHome = document.getElementById('inputHome').value || "HOME";
+        const namaAway = document.getElementById('inputAway').value || "AWAY";
+
+        let homeAttack = parseFloat(document.getElementById('homeAttack').value);
+        let homeDefense = parseFloat(document.getElementById('homeDefense').value);
+        let awayAttack = parseFloat(document.getElementById('awayAttack').value);
+        let awayDefense = parseFloat(document.getElementById('awayDefense').value);
+        
+        let hcGet = parseFloat(document.getElementById('homeCornerGet').value);
+        let hcCon = parseFloat(document.getElementById('homeCornerConceded').value);
+        let acGet = parseFloat(document.getElementById('awayCornerGet').value);
+        let acCon = parseFloat(document.getElementById('awayCornerConceded').value);
+
+        if (isNaN(homeAttack) || isNaN(homeDefense) || isNaN(awayAttack) || isNaN(awayDefense) ||
+            isNaN(hcGet) || isNaN(hcCon) || isNaN(acGet) || isNaN(acCon)) {
+            alert("Harap isi semua statistik dasar terlebih dahulu!");
+            return;
+        }
+
+        const homeForm = parseScoreRecord(document.getElementById('homeFormRecent').value);
+        const awayForm = parseScoreRecord(document.getElementById('awayFormRecent').value);
+        const h2hRecent = parseH2H(document.getElementById('h2hRecent').value);
+        const recentGoals = parseRecentGoals(document.getElementById('recentGoals').value);
+        const homeInjuries = parseInjuries(document.getElementById('injuriesHome').value);
+        const awayInjuries = parseInjuries(document.getElementById('injuriesAway').value);
+
+        const homeXg = parseFloat(document.getElementById('homeXg').value) || (homeAttack * 0.7);
+        const awayXg = parseFloat(document.getElementById('awayXg').value) || (awayAttack * 0.68);
+        const homeXga = parseFloat(document.getElementById('homeXga').value) || (homeDefense * 1.2);
+        const awayXga = parseFloat(document.getElementById('awayXga').value) || (awayDefense * 1.2);
+
+        const homeFormBoost = (homeForm.wins * 0.08) - (homeForm.losses * 0.07) + (homeForm.draws * 0.02);
+        const awayFormBoost = (awayForm.wins * 0.08) - (awayForm.losses * 0.07) + (awayForm.draws * 0.02);
+
+        if (document.getElementById('formHomeWin').checked) { homeAttack += 0.10; }
+        if (document.getElementById('formAwayWin').checked) { awayAttack += 0.10; }
+        if (document.getElementById('formHomeLose').checked) { homeDefense += 0.15; }
+        if (document.getElementById('formAwayLose').checked) { awayDefense += 0.15; }
+
+        homeAttack += homeFormBoost + (recentGoals.home * 0.05) + (homeXg * 0.12);
+        awayAttack += awayFormBoost + (recentGoals.away * 0.05) + (awayXg * 0.12);
+        homeDefense += Math.max(0, (1.5 - recentGoals.home) * 0.10) + (awayXg * 0.08);
+        awayDefense += Math.max(0, (1.5 - recentGoals.away) * 0.10) + (homeXg * 0.08);
+
+        if (homeInjuries.length > 0) {
+            homeAttack -= homeInjuries.length * 0.06;
+            homeDefense += homeInjuries.length * 0.05;
+        }
+        if (awayInjuries.length > 0) {
+            awayAttack -= awayInjuries.length * 0.06;
+            awayDefense += awayInjuries.length * 0.05;
+        }
+
+        if (document.getElementById('boostHomeValue').checked) { homeAttack += 0.20; homeDefense = Math.max(0.1, homeDefense - 0.10); }
+        if (document.getElementById('boostAwayValue').checked) { awayAttack += 0.20; awayDefense = Math.max(0.1, awayDefense - 0.10); }
+        if (document.getElementById('boostGeoHome').checked) { homeAttack += 0.15; hcGet += 0.50; }
+        if (document.getElementById('boostTradisi').checked) {
+            if (homeAttack < 1.80 && databaseNegara[namaHome] && databaseNegara[namaHome][0] >= 2.0) homeAttack = 1.95;
+            if (awayAttack < 1.50 && databaseNegara[namaAway] && databaseNegara[namaAway][2] >= 1.7) awayAttack = 1.65;
+        }
+
+        if (h2hRecent.home > h2hRecent.away) {
+            homeAttack += 0.12;
+            awayDefense += 0.08;
+        } else if (h2hRecent.away > h2hRecent.home) {
+            awayAttack += 0.12;
+            homeDefense += 0.08;
+        }
+
+        document.getElementById('txtNamaHome').innerText = namaHome.toUpperCase();
+        document.getElementById('txtNamaAway').innerText = namaAway.toUpperCase();
+        document.getElementById('lblHomeName').innerText = namaHome;
+        document.getElementById('lblAwayName').innerText = namaAway;
+
+        const expHomeGoals = homeAttack * awayDefense;
+        const expAwayGoals = awayAttack * homeDefense;
+
+        let daftarSkor = [];
+        let homeWinProb = 0; let drawProb = 0; let awayWinProb = 0;
+        let under25Prob = 0; let over25Prob = 0;
+        let bttsNoProb = 0; 
+
+        for (let h = 0; h <= 6; h++) {
+            for (let a = 0; a <= 6; a++) {
+                const probHome = poisson(expHomeGoals, h);
+                const probAway = poisson(expAwayGoals, a);
+                const totalProb = probHome * probAway * 100;
+
+                if (h <= 5 && a <= 5) daftarSkor.push({ skor: h + " - " + a, persen: totalProb });
+                if (h > a) homeWinProb += totalProb;
+                else if (h === a) drawProb += totalProb;
+                else awayWinProb += totalProb;
+
+                if ((h + a) < 2.5) under25Prob += totalProb;
+                else over25Prob += totalProb;
+
+                if (h === 0 || a === 0) {
+                    bttsNoProb += totalProb;
+                }
+            }
+        }
+
+        let bttsYesProb = 100 - bttsNoProb;
+
+        if (document.getElementById('h2hDominant').checked) {
+            if (homeWinProb > awayWinProb) {
+                homeWinProb += 5.0; awayWinProb = Math.max(0, awayWinProb - 5.0);
+            } else if (awayWinProb > homeWinProb) {
+                awayWinProb += 5.0; homeWinProb = Math.max(0, homeWinProb - 5.0);
+            }
+            let totalBaru = homeWinProb + drawProb + awayWinProb;
+            homeWinProb = (homeWinProb / totalBaru) * 100;
+            drawProb = (drawProb / totalBaru) * 100;
+            awayWinProb = (awayWinProb / totalBaru) * 100;
+        }
+
+        document.getElementById('valHome').innerText = homeWinProb.toFixed(1);
+        document.getElementById('valDraw').innerText = drawProb.toFixed(1);
+        document.getElementById('valAway').innerText = awayWinProb.toFixed(1);
+        document.getElementById('barHome').style.width = homeWinProb + "%";
+        document.getElementById('barDraw').style.width = drawProb + "%";
+        document.getElementById('barAway').style.width = awayWinProb + "%";
+
+        document.getElementById('predictOU').innerHTML = under25Prob > over25Prob ? 
+            `<span style="color:var(--accent-red)">UNDER 2.5</span><br><span style="font-size:11px;color:var(--text-muted)">(${under25Prob.toFixed(1)}%)</span>` :
+            `<span style="color:var(--accent-green)">OVER 2.5</span><br><span style="font-size:11px;color:var(--text-muted)">(${over25Prob.toFixed(1)}%)</span>`;
+
+        const totalEkspektasiCorner = ((hcGet + acCon) / 2) + ((acGet + hcCon) / 2);
+        let under95Corner = 0; let over95Corner = 0;
+        for (let c = 0; c <= 25; c++) {
+            const probC = poisson(totalEkspektasiCorner, c) * 100;
+            if (c < 9.5) under95Corner += probC; else over95Corner += probC;
+        }
+        document.getElementById('predictCorner').innerHTML = under95Corner > over95Corner ?
+            `<span style="color:var(--accent-red)">UNDER 9.5</span><br><span style="font-size:11px;color:var(--text-muted)">(${totalEkspektasiCorner.toFixed(1)} btg)</span>` :
+            `<span style="color:var(--accent-green)">OVER 9.5</span><br><span style="font-size:11px;color:var(--text-muted)">(${totalEkspektasiCorner.toFixed(1)} btg)</span>`;
+
+        document.getElementById('predictBTTS').innerHTML = bttsYesProb > bttsNoProb ?
+            `<span style="color:var(--accent-green)">BTTS: YES</span><br><span style="font-size:11px;color:var(--text-muted)">(${bttsYesProb.toFixed(1)}%)</span>` :
+            `<span style="color:var(--accent-red)">BTTS: NO</span><br><span style="font-size:11px;color:var(--text-muted)">(${bttsNoProb.toFixed(1)}%)</span>`;
+
+        const topOption = Math.max(homeWinProb, drawProb, awayWinProb);
+        const bestResult = homeWinProb === topOption ? `${namaHome}` : drawProb === topOption ? 'Draw' : `${namaAway}`;
+        const confidenceScore = Math.min(94, Math.max(52, (topOption - Math.min(homeWinProb, drawProb, awayWinProb)) + 45));
+
+        document.getElementById('summaryConfidence').innerText = `${confidenceScore.toFixed(1)}%`;
+        document.getElementById('summaryPick').innerText = bestResult;
+        document.getElementById('summaryMarket').innerText = over25Prob > under25Prob ? 'Over 2.5' : 'Under 2.5';
+        document.getElementById('summaryNote').innerText = `${bestResult === 'Draw' ? 'Hasil seri' : 'Pilihan utama: ' + bestResult} dengan keyakinan ${confidenceScore.toFixed(1)}% berdasarkan analisis probabilitas dan faktor tambahan.`;
+
+        const formDetailHome = parseScoreRecord(document.getElementById('homeFormRecent').value);
+        const formDetailAway = parseScoreRecord(document.getElementById('awayFormRecent').value);
+        const h2hDetail = parseH2H(document.getElementById('h2hRecent').value);
+
+        const formSummaryHome = formDetailHome.wins > formDetailHome.losses ? 'sedang tren positif' : formDetailHome.losses > formDetailHome.wins ? 'mengalami tren melemah' : 'stabil';
+        const formSummaryAway = formDetailAway.wins > formDetailAway.losses ? 'sedang tren positif' : formDetailAway.losses > formDetailAway.wins ? 'mengalami tren melemah' : 'stabil';
+        const h2hText = h2hDetail.home > h2hDetail.away ? `${namaHome} punya keunggulan head-to-head` : h2hDetail.away > h2hDetail.home ? `${namaAway} punya keunggulan head-to-head` : 'Head-to-head cenderung seimbang';
+
+        const xgText = `${namaHome} xG ${homeXg.toFixed(2)} vs ${namaAway} xG ${awayXg.toFixed(2)}.`;
+        const injuryText = homeInjuries.length || awayInjuries.length ? `Absensi pemain kunci: ${homeInjuries.length ? `${namaHome}: ${homeInjuries.slice(0,2).join(', ')}` : ''}${homeInjuries.length && awayInjuries.length ? '; ' : ''}${awayInjuries.length ? `${namaAway}: ${awayInjuries.slice(0,2).join(', ')}` : ''}.` : 'Tidak ada catatan absensi utama yang terlihat.';
+
+        if (liveFeed.isLive) {
+            const liveScoreDiff = liveFeed.scoreHome - liveFeed.scoreAway;
+            if (liveFeed.minute >= 45) {
+                if (liveScoreDiff > 0) {
+                    homeWinProb += 6 + liveScoreDiff * 2;
+                    awayWinProb = Math.max(0, awayWinProb - (4 + liveScoreDiff));
+                } else if (liveScoreDiff < 0) {
+                    awayWinProb += 6 + Math.abs(liveScoreDiff) * 2;
+                    homeWinProb = Math.max(0, homeWinProb - (4 + Math.abs(liveScoreDiff)));
+                }
+
+                if (liveFeed.redHome > liveFeed.redAway) {
+                    awayWinProb += 3;
+                    homeWinProb = Math.max(0, homeWinProb - 2);
+                } else if (liveFeed.redAway > liveFeed.redHome) {
+                    homeWinProb += 3;
+                    awayWinProb = Math.max(0, awayWinProb - 2);
+                }
+            }
+        }
+
+        const analysisText = `${bestResult === 'Draw' ? 'Cenderung kemungkinan seri' : `${bestResult} menunjukkan dominasi paling kuat`} dengan peluang ${topOption.toFixed(1)}%. ${namaHome} ${formSummaryHome}, sementara ${namaAway} ${formSummaryAway}. ${h2hText}. ${xgText} ${injuryText} ${over25Prob > under25Prob ? 'Pasar gol juga condong ke Over 2.5' : 'Pasar gol lebih condong ke Under 2.5'} dan ${bttsYesProb > bttsNoProb ? 'BTTS berpeluang naik.' : 'BTTS cenderung tidak terjadi.'}`;
+        document.getElementById('analysisShort').innerText = analysisText;
+
+        const reasonText = `${bestResult} paling kuat karena ${bestResult === 'Draw' ? 'nilai peluang seri cukup seimbang dengan form yang relatif stabil' : `${bestResult} punya kualitas serangan yang lebih unggul dan dominasi dalam duel terakhir`}. ${liveFeed.isLive ? `Live state: skor ${liveFeed.scoreHome}-${liveFeed.scoreAway} pada menit ${liveFeed.minute}, jadi rekomendasi saat ini cenderung ${liveFeed.scoreHome > liveFeed.scoreAway ? namaHome : liveFeed.scoreAway > liveFeed.scoreHome ? namaAway : 'seimbang'}.` : ''} ${over25Prob > under25Prob ? 'Peluang gol lebih tinggi karena lini serangan kedua tim aktif.' : 'Peluang gol lebih terkontrol karena skema defensif lebih dominan.'}`;
+        document.getElementById('reasonDetail').innerText = reasonText;
+
+        const badges = [
+            `${namaHome} form: ${formDetailHome.wins}-${formDetailHome.draws}-${formDetailHome.losses}`,
+            `${namaAway} form: ${formDetailAway.wins}-${formDetailAway.draws}-${formDetailAway.losses}`,
+            `xG ${homeXg.toFixed(2)} - ${awayXg.toFixed(2)}`,
+            h2hDetail.home > h2hDetail.away ? `${namaHome} H2H +` : h2hDetail.away > h2hDetail.home ? `${namaAway} H2H +` : 'H2H seimbang'
+        ];
+        document.getElementById('reasonBadges').innerHTML = badges.map(item => `<span class="stat-badge">${item}</span>`).join('');
+
+        const insights = [
+            { label: 'Main Pick', value: bestResult },
+            { label: 'xG Edge', value: `${homeXg.toFixed(2)} - ${awayXg.toFixed(2)}` },
+            { label: 'Momentum', value: formDetailHome.wins >= formDetailAway.wins ? `${namaHome} lebih kuat` : `${namaAway} lebih kuat` },
+            { label: 'Risk', value: confidenceScore > 70 ? 'Low' : confidenceScore > 60 ? 'Medium' : 'High' }
+        ];
+        document.getElementById('topInsights').innerHTML = insights.map(item => `
+            <div class="insight-item"><span>${item.label}</span><strong>${item.value}</strong></div>
+        `).join('');
+
+        const homeAttackScore = Math.min(100, Math.max(0, (homeAttack * 28) + (homeXg * 18) - (homeXga * 10)));
+        const awayAttackScore = Math.min(100, Math.max(0, (awayAttack * 28) + (awayXg * 18) - (awayXga * 10)));
+        const homeDefenseScore = Math.min(100, Math.max(0, (homeDefense * 22) + (homeXga * 18)));
+        const awayDefenseScore = Math.min(100, Math.max(0, (awayDefense * 22) + (awayXga * 18)));
+        const formScoreHome = Math.min(100, Math.max(0, formDetailHome.wins * 20 + formDetailHome.draws * 8 - formDetailHome.losses * 16 + 30));
+        const formScoreAway = Math.min(100, Math.max(0, formDetailAway.wins * 20 + formDetailAway.draws * 8 - formDetailAway.losses * 16 + 30));
+
+        const graphData = [
+            { label: 'Attack', home: homeAttackScore, away: awayAttackScore },
+            { label: 'Defense', home: homeDefenseScore, away: awayDefenseScore },
+            { label: 'Form', home: formScoreHome, away: formScoreAway },
+            { label: 'xG', home: Math.min(100, homeXg * 28), away: Math.min(100, awayXg * 28) }
+        ];
+
+        const miniGraph = document.getElementById('miniGraph');
+        miniGraph.innerHTML = graphData.map(item => {
+            const homeValue = Math.round(item.home);
+            const awayValue = Math.round(item.away);
+            return `
+                <div class="mini-graph-item">
+                    <div class="mini-label-row">
+                        <span>${item.label}</span>
+                        <span>${homeValue} vs ${awayValue}</span>
+                    </div>
+                    <div class="mini-bar-row">
+                        <div class="mini-bar-track"><div class="mini-bar home" style="width: ${homeValue}%"></div></div>
+                        <div class="mini-bar-track"><div class="mini-bar away" style="width: ${awayValue}%"></div></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        daftarSkor.sort((x, y) => y.persen - x.persen);
+        const tbody = document.getElementById('resultTableBody');
+        tbody.innerHTML = "";
+        for (let i = 0; i < 5; i++) {
+            const row = document.createElement('tr');
+            if (i === 0) row.className = "top-row";
+            row.innerHTML = `<td>#1</td><td><b>${daftarSkor[i].skor}</b></td><td>${daftarSkor[i].persen.toFixed(2)}%</td>`;
+            // Baris perbaikan inkremen rank
+            row.cells[0].innerText = "#" + (i + 1);
+            tbody.appendChild(row);
+        }
+
+        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
