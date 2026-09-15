@@ -46,22 +46,10 @@ function minuteFromMatch(match) {
     return Math.max(0, Math.min(90, elapsed));
 }
 
-function toLivePayload(match, league) {
-    if (!match) {
-        return {
-            isLive: false,
-            source: PROVIDER,
-            league,
-            message: 'No live match found for this competition.'
-        };
-    }
-
+function toMatchPayload(match) {
     const score = scoreFromMatch(match);
     const minute = minuteFromMatch(match);
     return {
-        isLive: minute >= 0 && minute <= 95 && !match.MatchIsFinished,
-        source: PROVIDER,
-        league,
         matchId: match.MatchID,
         homeTeam: match.Team1?.TeamName || 'HOME',
         awayTeam: match.Team2?.TeamName || 'AWAY',
@@ -70,6 +58,26 @@ function toLivePayload(match, league) {
         scoreAway: score.away,
         redHome: 0,
         redAway: 0,
+        updatedAt: new Date().toISOString()
+    };
+}
+
+function toLivePayload(matches, league) {
+    if (!matches.length) {
+        return {
+            isLive: false,
+            source: PROVIDER,
+            league,
+            matches: [],
+            message: 'No live match found for this competition.'
+        };
+    }
+
+    return {
+        isLive: true,
+        source: PROVIDER,
+        league,
+        matches: matches.map(toMatchPayload),
         updatedAt: new Date().toISOString(),
         note: 'OpenLigaDB provides free match and score data; minute and cards depend on provider coverage.'
     };
@@ -87,15 +95,16 @@ async function fetchProvider(league) {
 
     const matches = await response.json();
     const now = Date.now();
-    const liveMatch = matches
+    const liveMatches = matches
         .filter(match => !match.MatchIsFinished)
         .filter(match => {
             const start = Date.parse(match.MatchDateTime || '');
             return Number.isFinite(start) && start <= now && now - start <= 100 * 60000;
         })
-        .sort((a, b) => Date.parse(a.MatchDateTime) - Date.parse(b.MatchDateTime))[0];
+        .sort((a, b) => Date.parse(a.MatchDateTime) - Date.parse(b.MatchDateTime))
+        .slice(0, 10);
 
-    const payload = toLivePayload(liveMatch, league);
+    const payload = toLivePayload(liveMatches, league);
     cache.set(league, payload);
     return payload;
 }
