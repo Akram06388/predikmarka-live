@@ -458,6 +458,18 @@
                 min-width: 100%;
             }
 
+            .live-actions {
+                flex-direction: column;
+            }
+
+            .live-header {
+                align-items: flex-start;
+            }
+
+            .live-status {
+                flex-shrink: 0;
+            }
+
             .full-width {
                 grid-column: 1 / -1;
             }
@@ -492,6 +504,20 @@
             .prob-line {
                 font-size: 12px;
                 gap: 8px;
+            }
+
+            .prob-line span:first-child,
+            .prob-line span:last-child,
+            .insight-item span,
+            .insight-item strong {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .confidence-pill {
+                max-width: 100%;
+                white-space: normal;
+                line-height: 1.4;
             }
 
             .live-score-row {
@@ -893,6 +919,7 @@
             margin-top: 8px;
             color: var(--text-muted);
             font-size: 10px;
+            flex-wrap: wrap;
         }
 
         .mini-bar-track {
